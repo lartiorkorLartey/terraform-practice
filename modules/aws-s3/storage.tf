@@ -3,6 +3,6 @@ resource "aws_s3_bucket" "ddk_bucket" {
 
   tags = {
     Name        = var.bucket_name
-    Environment = var.environment
+    Environment = var.s3_environment
   }
 }

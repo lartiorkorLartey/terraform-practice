@@ -1,8 +1,10 @@
 resource "aws_instance" "ddk_ec2" {
-  ami               = var.ami_id
-  instance_type     = var.instance_type
-  subnet_id         = var.subnet_id
-  availability_zone = var.aws_az
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  availability_zone           = var.aws_az
+  associate_public_ip_address = var.associate_public_ip
+  vpc_security_group_ids      = [var.sec_grp]
 
   tags = {
     Name = var.instance_name

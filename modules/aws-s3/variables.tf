@@ -1,3 +1,3 @@
 variable "s3_bucket" {}
 variable "bucket_name" {}
-variable "environment" {}
+variable "s3_environment" {}

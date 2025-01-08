@@ -3,6 +3,8 @@ variable "instance_name" {}
 variable "ami_id" {}
 variable "instance_type" {}
 variable "subnet_id" {}
+variable "associate_public_ip" {}
+variable "sec_grp" {}
 
 # ebs
 variable "ebs_volume" {}

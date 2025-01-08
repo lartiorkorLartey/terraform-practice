@@ -12,3 +12,5 @@ resource "aws_iam_instance_profile" "ddk_instance_profile" {
   name = var.instance_profile
   role = aws_iam_role.ddk_iam_role.name
 }
+
+# create s3 and dynamo db users 
