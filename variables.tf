@@ -13,7 +13,6 @@ variable "associate_public_ip" {}
 variable "ebs_volume" {}
 variable "aws_az" {}
 variable "volume_size" {}
-variable "instance_ip" {}
 
 # attachment
 variable "device_name" {}
@@ -69,3 +68,13 @@ variable "record_name" {}
 variable "record_type" {}
 variable "record_ttl" {}
 # variable "instance_ip" {}
+
+# cloudfront
+variable "cache_policy_name" {}
+variable "s3_bucket_name" {}
+variable "bucket_tag" {}
+variable "cloudfront_oac_name" {}
+variable "oac_origin_type" {}
+variable "viewer_protocol_policy" {}
+variable "price_class" {}
+variable "cloudfront_environment" {}
