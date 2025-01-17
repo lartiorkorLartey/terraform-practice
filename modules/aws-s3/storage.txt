@@ -1,0 +1,66 @@
+resource "aws_s3_bucket" "s3_bucket" {
+  for_each = toset(var.bucket_names)
+
+  bucket = each.value
+  object_lock_enabled = true
+
+  tags = {
+    Name        = each.value
+  }
+}
+
+resource "aws_s3_bucket_acl" "bucket_acl" {
+  for_each = toset(var.bucket_names)
+
+  bucket     = aws_s3_bucket.s3_bucket[each.key].id
+  acl        = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.s3_bucket_acl_ownership]
+}
+
+resource "aws_s3_bucket_ownership_controls" "s3_bucket_acl_ownership" {
+  for_each = toset(var.bucket_names)
+
+  bucket = aws_s3_bucket.s3_bucket[each.key].id
+
+  rule {
+    object_ownership = "ObjectWriter"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "bucket_versioning" {
+  for_each = toset(var.bucket_names)
+
+  bucket = aws_s3_bucket.s3_bucket[each.key].id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "object_lock_config" {
+  for_each = toset(var.bucket_names)
+
+  bucket = aws_s3_bucket.s3_bucket[each.key].bucket
+
+  rule {
+    default_retention {
+      mode = "GOVERNANCE"
+      days = 100
+    }
+  }
+}
+
+resource "aws_kms_key" "kms_key" {
+  description             = "This key is used to encrypt bucket objects"
+  deletion_window_in_days = 15
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption" {
+  for_each = toset(var.bucket_names)
+
+  bucket = aws_s3_bucket.s3_bucket[each.key].id
+
+  rule {
+    bucket_key_enabled=true
+  }
+}

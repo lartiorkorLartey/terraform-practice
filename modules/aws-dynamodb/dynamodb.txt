@@ -1,0 +1,140 @@
+resource "aws_dynamodb_table" "ddk-dynamodb-table" {
+  count = 3
+
+  name          = var.table_names[count.index]
+  billing_mode  = "PAY_PER_REQUEST"
+  hash_key      = "pk"
+  range_key     = "sk"
+
+  attribute {
+    name = "sk"
+    type = "S"
+  }
+
+  attribute {
+    name = "pk"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "TimeToExist"
+    enabled       = true
+  }
+
+  global_secondary_index {
+    name            = "ddk-dynamodb-index"
+    hash_key        = "pk"
+    range_key       = "sk"
+    projection_type = "KEYS_ONLY"
+  }
+
+  tags = {
+    Name          = "table-${count.index + 1}"
+    # Environment = var.dynamodb_environment
+  }
+}
+
+
+
+
+# resource "aws_dynamodb_table" "ddk-dynamodb-table-1" {
+#   name          = "dodokpo-dynamodb-dev"
+#   billing_mode  = "PAY_PER_REQUEST"
+#   hash_key      = "pk"
+#   range_key     = "sk"
+
+#   attribute {
+#     name = "sk"
+#     type = "S"
+#   }
+
+#   attribute {
+#     name = "pk"
+#     type = "S"
+#   }
+
+#   ttl {
+#     attribute_name = "TimeToExist"
+#     enabled       = true
+#   }
+
+#   global_secondary_index {
+#     name            = "ddk-dynamodb-index"
+#     hash_key        = "pk"
+#     range_key       = "sk"
+#     projection_type = "KEYS_ONLY"
+#   }
+
+#   tags = {
+#     Name          = "dev-table"
+#     Environment = "dev"
+#   }
+# }
+
+# resource "aws_dynamodb_table" "ddk-dynamodb-table-2" {
+#   name          = "dodokpo-dynamodb-staging"
+#   billing_mode  = "PAY_PER_REQUEST"
+#   hash_key      = "pk"
+#   range_key     = "sk"
+
+#   attribute {
+#     name = "sk"
+#     type = "S"
+#   }
+
+#   attribute {
+#     name = "pk"
+#     type = "S"
+#   }
+
+#   ttl {
+#     attribute_name = "TimeToExist"
+#     enabled       = true
+#   }
+
+#   global_secondary_index {
+#     name            = "ddk-dynamodb-234-index"
+#     hash_key        = "pk"
+#     range_key       = "sk"
+#     projection_type = "KEYS_ONLY"
+#   }
+
+#   tags = {
+#     Name          = "staging-table"
+#     Environment = "staging"
+#   }
+# }
+
+# resource "aws_dynamodb_table" "ddk-dynamodb-table-3" {
+#   name          = "dodokpo-dynamodb-prod"
+#   billing_mode  = "PAY_PER_REQUEST"
+#   hash_key      = "pk"
+#   range_key     = "sk"
+
+#   attribute {
+#     name = "sk"
+#     type = "S"
+#   }
+
+#   attribute {
+#     name = "pk"
+#     type = "S"
+#   }
+
+#   ttl {
+#     attribute_name = "TimeToExist"
+#     enabled       = true
+#   }
+
+#   global_secondary_index {
+#     name            = "ddk-dynamodb-456-index"
+#     hash_key        = "pk"
+#     range_key       = "sk"
+#     projection_type = "KEYS_ONLY"
+#   }
+
+#   tags = {
+#     Name          = "production-table"
+#     Environment = "production"
+#   }
+# }

@@ -1,11 +1,11 @@
 output "vpc_id" {
-  value = aws_vpc.ddk_vpc.id
+  value = aws_default_vpc.default.id
 }
 
 output "subnet_id" {
-  value = aws_subnet.ddk_subnet_1.id
+  value = data.aws_subnet.subnet.id
 }
 
-output "sec_grp" {
-  value = aws_security_group.myapp-sg.id
+output "security_group" {
+  value = aws_default_security_group.default_sg.id
 }

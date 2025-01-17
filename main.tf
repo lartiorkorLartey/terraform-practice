@@ -15,44 +15,168 @@ provider "aws" {
   secret_key = var.aws_access_key
 }
 
-# module "vpc" {
-#   source = "./modules/aws-vpc"
+module "iam" {
+  source = "./modules/aws-iam"
 
-#   vpc_name     = var.vpc_name
-#   vpc_cidr     = var.vpc_cidr
-#   ddk_subnet_1 = var.ddk_subnet_1
-#   vpc_tenancy  = var.vpc_tenancy
-#   cidr_block   = var.cidr_block
-#   aws_az       = var.aws_az
-# }
+}
 
-# module "ec2" {
-#   source = "./modules/aws-ec2"
+module "vpc" {
+  source = "./modules/aws-vpc"
 
-#   instance_name = var.instance_name
-#   ami_id        = var.ami_id
-#   instance_type = var.instance_type
-#   ebs_volume    = var.ebs_volume
-#   aws_az        = var.aws_az
-#   volume_size   = var.volume_size
-#   device_name   = var.device_name
-#   associate_public_ip   = var.associate_public_ip
-#   subnet_id     = module.vpc.subnet_id
-#   sec_grp       = module.vpc.sec_grp
-# }
+  sg_tag = var.sg_tag
+  aws_az=var.aws_az
+  vpc_tag=var.vpc_tag
+}
 
-# module "s3" {
+# codedeploy app
+resource "aws_codedeploy_app" "codedeploy-app" {
+  name = var.codedeploy_app_name
+}
+
+module "ec2_dev" {
+  source = "./modules/aws-ec2"
+
+  instance_name  = var.dev_instance
+  ami_id         = var.ami_id
+  instance_type  = var.instance_type
+  subnet_id      = module.vpc.subnet_id
+  security_group = module.vpc.security_group
+  volume_size    = var.volume_size
+}
+
+module "codedeploy_dev" {
+  source = "./modules/aws-codedeploy"
+
+codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+for_each = toset(var.deployment_groups_dev)
+deployment_groups = each.value
+ec2_filter_name =module.ec2_dev.instance_name.Name
+codedeploy_role_arn = module.iam.codedeploy_role_arn
+}
+
+module "ec2_staging" {
+  source = "./modules/aws-ec2"
+
+  instance_name  = var.staging_instance
+  ami_id         = var.ami_id
+  instance_type  = var.instance_type
+  subnet_id      = module.vpc.subnet_id
+  security_group = module.vpc.security_group
+  volume_size    = var.volume_size
+}
+
+module "codedeploy_staging" {
+  source = "./modules/aws-codedeploy"
+
+codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+for_each = toset(var.deployment_groups_staging)
+deployment_groups = each.value
+ec2_filter_name =module.ec2_staging.instance_name.Name
+codedeploy_role_arn = module.iam.codedeploy_role_arn
+}
+
+module "ec2_production" {
+  source = "./modules/aws-ec2"
+
+  instance_name  = var.prod_instance
+  ami_id         = var.ami_id
+  instance_type  = var.instance_type
+  subnet_id      = module.vpc.subnet_id
+  security_group = module.vpc.security_group
+  volume_size    = var.volume_size
+}
+
+module "codedeploy_production" {
+  source = "./modules/aws-codedeploy"
+
+codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+for_each = toset(var.deployment_groups_production)
+deployment_groups = each.value
+ec2_filter_name =module.ec2_production.instance_name.Name
+codedeploy_role_arn = module.iam.codedeploy_role_arn
+}
+
+
+
+
+###############################################################################
+
+# module "codedeploy_bucket" {
 #   source = "./modules/aws-s3"
 
-#   s3_bucket   = var.s3_bucket
-#   bucket_name = var.bucket_name
-#   s3_environment = var.s3_environment
+#   bucket_name=var.codedeploy_bucket
 # }
+
+# module "cloudfront_bucket" {
+#   source = "./modules/aws-s3"
+
+#   bucket_name = var.s3_bucket
+
+# }
+
+# module "cloudfront" {
+#   source = "./modules/aws-cloudfront"
+
+#   cache_policy_name      = var.cache_policy_name
+#   cloudfront_oac_name    = var.cloudfront_oac_name
+#   oac_origin_type        = var.oac_origin_type
+#   viewer_protocol_policy = var.viewer_protocol_policy
+#   # price_class            = var.price_class
+#   cloudfront_environment = var.cloudfront_environment
+#   regional_domain_name   = module.cloudfront_bucket.bucket_regional_domain_name
+# }
+
+# # bucket policy and cors
+# data "aws_caller_identity" "current" {}
+
+# locals {
+#   account_id = data.aws_caller_identity.current.account_id
+# }
+
+# data "aws_iam_policy_document" "allow_cloudfront_access" {
+#   statement {
+#     principals {
+#       type        = "Service"
+#       identifiers = ["cloudfront.amazonaws.com"]
+#     }
+
+#     actions = ["s3:GetObject"]
+
+#     resources = [
+#       "arn:aws:s3:::${module.cloudfront_bucket.s3_bucket_name}/*",
+#     ]
+
+#     condition {
+#       test     = "StringEquals"
+#       variable = "aws:SourceArn"
+#       values   = ["arn:aws:cloudfront::${local.account_id}:distribution/${module.cloudfront.distribution_id}"]
+#     }
+#   }
+# }
+
+# resource "aws_s3_bucket_policy" "bucket_policy" {
+#   bucket = module.cloudfront_bucket.s3_bucket_id
+#   policy = data.aws_iam_policy_document.allow_cloudfront_access.json
+# }
+
+# resource "aws_s3_bucket_cors_configuration" "bucket_cors_configuration" {
+#   bucket = module.cloudfront_bucket.s3_bucket_id
+
+#   cors_rule {
+#     allowed_headers = ["*"]
+#     allowed_methods = ["POST", "GET", "PUT", "DELETE", "HEAD"]
+#     allowed_origins = ["*"]
+#     expose_headers  = []
+#     max_age_seconds = 3000
+#   }
+# }
+
+###############################################################################
 
 # module "dynamodb" {
 #   source = "./modules/aws-dynamodb"
 
-#   table_name               = var.table_name
+#   table_names = var.table_names
 #   billing_mode             = var.billing_mode
 #   hash_key                 = var.hash_key
 #   range_key                = var.range_key
@@ -67,18 +191,6 @@ provider "aws" {
 #   gs_index_range_key       = var.gs_index_range_key
 #   gs_index_projection_type = var.gs_index_projection_type
 #   tag_name                 = var.tag_name
-#   dynamodb_environment     = var.dynamodb_environment
-# }
-
-# module "codedeploy" {
-#   source = "./modules/aws-codedeploy"
-
-# codedeploy_role_name=var.codedeploy_role_name
-# codedeploy_app_name=var.codedeploy_app_name
-# deployment_group_name=var.deployment_group_name
-# ec2_tag1_key=var.ec2_tag1_key
-# ec2_tag1_value=var.ec2_tag1_value
-# ec2_tag1_type=var.ec2_tag1_type
 # }
 
 # module "route53" {
@@ -94,16 +206,3 @@ provider "aws" {
 # output "ip" {
 #   value=module.ec2.public_instance_ip
 # }
-
-module "cloudfront" {
-  source = "./modules/aws-cloudfront"
-
-cache_policy_name=var.cache_policy_name
-s3_bucket_name=var.s3_bucket_name
-bucket_tag=var.bucket_tag
-cloudfront_oac_name=var.cloudfront_oac_name
-oac_origin_type=var.oac_origin_type
-viewer_protocol_policy=var.viewer_protocol_policy
-price_class=var.price_class
-cloudfront_environment=var.cloudfront_environment
-}

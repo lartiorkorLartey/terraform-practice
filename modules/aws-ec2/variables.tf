@@ -3,13 +3,12 @@ variable "instance_name" {}
 variable "ami_id" {}
 variable "instance_type" {}
 variable "subnet_id" {}
-variable "associate_public_ip" {}
-variable "sec_grp" {}
+variable "security_group" {}
 
 # ebs
-variable "ebs_volume" {}
-variable "aws_az" {}
 variable "volume_size" {}
+# variable "aws_az" {}
+# variable "volume_size" {}
 
 # attachment
-variable "device_name" {}
+# variable "device_name" {}

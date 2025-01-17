@@ -2,42 +2,48 @@
 variable "aws_access_key" {}
 variable "aws_access_key_id" {}
 
+# vpc
+variable "sg_tag" {}
+variable "aws_az" {}
+variable "vpc_tag" {}
+
 # ec2
-variable "instance_name" {}
+variable "dev_instance" {}
+variable "staging_instance" {}
+variable "prod_instance" {}
 variable "ami_id" {}
 variable "instance_type" {}
-variable "associate_public_ip" {}
-# variable "sec_grp" {}
 
 # ebs
-variable "ebs_volume" {}
-variable "aws_az" {}
 variable "volume_size" {}
 
-# attachment
-variable "device_name" {}
-
-# vpc
-variable "vpc_name" {}
-variable "vpc_cidr" {}
-variable "vpc_tenancy" {}
-
-# subnet
-variable "ddk_subnet_1" {}
-variable "cidr_block" {}
+# codedeploy
+variable "codedeploy_app_name" {}
+variable "deployment_groups_dev" {
+  type = list(string)
+}
+variable "deployment_groups_staging" {
+  type = list(string)
+}
+variable "deployment_groups_production" {
+  type = list(string)
+}
 
 # s3 bucket
+variable "codedeploy_bucket" {}
 variable "s3_bucket" {}
-variable "bucket_name" {}
-variable "s3_environment" {}
 
-# iam
-variable "iam_role" {}
-variable "iam_policy" {}
-variable "instance_profile" {}
+# cloudfront
+variable "cache_policy_name" {}
+variable "cloudfront_oac_name" {}
+variable "oac_origin_type" {}
+variable "viewer_protocol_policy" {}
+variable "cloudfront_environment" {}
 
 # dynamodb
-variable "table_name" {}
+variable "table_names" {
+  type = list(string)
+}
 variable "billing_mode" {}
 variable "hash_key" {}
 variable "range_key" {}
@@ -52,29 +58,14 @@ variable "gs_index_hash_key" {}
 variable "gs_index_range_key" {}
 variable "gs_index_projection_type" {}
 variable "tag_name" {}
-variable "dynamodb_environment" {}
-
-# codedeploy
-variable "codedeploy_role_name" {}
-variable "codedeploy_app_name" {}
-variable "deployment_group_name" {}
-variable "ec2_tag1_key" {}
-variable "ec2_tag1_value" {}
-variable "ec2_tag1_type" {}
 
 # route53
 variable "zone_name" {}
 variable "record_name" {}
 variable "record_type" {}
 variable "record_ttl" {}
-# variable "instance_ip" {}
 
-# cloudfront
-variable "cache_policy_name" {}
-variable "s3_bucket_name" {}
-variable "bucket_tag" {}
-variable "cloudfront_oac_name" {}
-variable "oac_origin_type" {}
-variable "viewer_protocol_policy" {}
-variable "price_class" {}
-variable "cloudfront_environment" {}
+# iam
+# variable "iam_role" {}
+# variable "iam_policy" {}
+# variable "instance_profile" {}

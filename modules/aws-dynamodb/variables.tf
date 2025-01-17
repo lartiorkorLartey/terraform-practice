@@ -1,4 +1,6 @@
-variable "table_name" {}
+variable "table_names" {
+  type = list(string)
+}
 variable "billing_mode" {}
 variable "hash_key" {}
 variable "range_key" {}
@@ -13,4 +15,3 @@ variable "gs_index_hash_key" {}
 variable "gs_index_range_key" {}
 variable "gs_index_projection_type" {}
 variable "tag_name" {}
-variable "dynamodb_environment" {}

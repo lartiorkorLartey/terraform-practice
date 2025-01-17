@@ -1,5 +1,7 @@
 resource "aws_dynamodb_table" "ddk-dynamodb-table" {
-  name         = var.table_name
+  count = 3
+
+  name         = var.table_names[count.index]
   billing_mode = var.billing_mode
   #   read_capacity  = 20
   #   write_capacity = 20
@@ -15,11 +17,6 @@ resource "aws_dynamodb_table" "ddk-dynamodb-table" {
     name = var.attribute_2_name
     type = var.attribute_2_type
   }
-
-  #   attribute {
-  #     name = "TopScore"
-  #     type = "N"
-  #   }
 
   ttl {
     attribute_name = var.ttl_attribute_name
@@ -37,7 +34,6 @@ resource "aws_dynamodb_table" "ddk-dynamodb-table" {
   }
 
   tags = {
-    Name        = var.tag_name
-    Environment = var.dynamodb_environment
+    Name = var.tag_name
   }
 }

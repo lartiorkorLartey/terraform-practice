@@ -1,58 +1,25 @@
-# vpc
-resource "aws_vpc" "ddk_vpc" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = var.vpc_tenancy
+resource "aws_default_vpc" "default" {
+  enable_dns_hostnames = true
 
   tags = {
-    Name = var.vpc_name
+    Name = var.vpc_tag
   }
 }
 
-# resource "aws_default_vpc" "default" {
-#   tags = {
-#     Name = "Default VPC"
-#   }
-# }
-
-# subnet
-resource "aws_subnet" "ddk_subnet_1" {
-  vpc_id            = aws_vpc.ddk_vpc.id
-  cidr_block        = var.cidr_block
-  availability_zone = var.aws_az
-
-  tags = {
-    Name = var.ddk_subnet_1
+data "aws_subnet" "subnet" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_default_vpc.default.id]
+  }
+  filter {
+    name   = "availability-zone"
+    values = [var.aws_az]
   }
 }
 
-# igw
-resource "aws_internet_gateway" "myapp-igw" {
-  vpc_id = aws_vpc.ddk_vpc.id
-}
-
-# route table
-resource "aws_default_route_table" "main-rtb" {
-  default_route_table_id = aws_vpc.ddk_vpc.default_route_table_id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.myapp-igw.id
-  }
-
-  # tags = {
-  #   Name = "${var.env_prefix}-main-rtb"
-  # }
-}
-
-# rtb ass
-resource "aws_route_table_association" "a-rtb-subnet" {
-  subnet_id      = aws_subnet.ddk_subnet_1.id
-  route_table_id = aws_default_route_table.main-rtb.id
-}
-
-resource "aws_security_group" "myapp-sg" {
-  name   = "myapp-sg"
-  vpc_id = aws_vpc.ddk_vpc.id
+# security group
+resource "aws_default_security_group" "default_sg" {
+  vpc_id = aws_default_vpc.default.id
 
   ingress {
     from_port   = 22
@@ -62,8 +29,15 @@ resource "aws_security_group" "myapp-sg" {
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 19092
+    to_port     = 19092
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -76,7 +50,7 @@ resource "aws_security_group" "myapp-sg" {
     prefix_list_ids = []
   }
 
-  # tags = {
-  #   Name = "${var.env_prefix}-sg"
-  # }
+  tags = {
+    Name = var.sg_tag
+  }
 }
