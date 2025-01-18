@@ -32,6 +32,7 @@ variable "deployment_groups_production" {
 # s3 bucket
 variable "codedeploy_bucket" {}
 variable "s3_bucket" {}
+variable "s3_backend" {}
 
 # cloudfront
 variable "cache_policy_name" {}
@@ -44,19 +45,10 @@ variable "cloudfront_environment" {}
 variable "table_names" {
   type = list(string)
 }
-variable "billing_mode" {}
 variable "hash_key" {}
 variable "range_key" {}
-variable "attribute_1_name" {}
-variable "attribute_1_type" {}
-variable "attribute_2_name" {}
-variable "attribute_2_type" {}
-variable "ttl_attribute_name" {}
-variable "ttl_enabled" {}
+variable "attribute_type" {}
 variable "gs_index_name" {}
-variable "gs_index_hash_key" {}
-variable "gs_index_range_key" {}
-variable "gs_index_projection_type" {}
 variable "tag_name" {}
 
 # route53

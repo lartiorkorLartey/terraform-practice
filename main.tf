@@ -1,24 +1,7 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.82"
-    }
-  }
+# module "iam" {
+#   source = "./modules/aws-iam"
 
-  required_version = ">= 1.2.0"
-}
-
-provider "aws" {
-  region     = "eu-west-1"
-  access_key = var.aws_access_key_id
-  secret_key = var.aws_access_key
-}
-
-module "iam" {
-  source = "./modules/aws-iam"
-
-}
+# }
 
 module "vpc" {
   source = "./modules/aws-vpc"
@@ -28,10 +11,10 @@ module "vpc" {
   vpc_tag=var.vpc_tag
 }
 
-# codedeploy app
-resource "aws_codedeploy_app" "codedeploy-app" {
-  name = var.codedeploy_app_name
-}
+# # codedeploy app
+# resource "aws_codedeploy_app" "codedeploy-app" {
+#   name = var.codedeploy_app_name
+# }
 
 module "ec2_dev" {
   source = "./modules/aws-ec2"
@@ -44,57 +27,57 @@ module "ec2_dev" {
   volume_size    = var.volume_size
 }
 
-module "codedeploy_dev" {
-  source = "./modules/aws-codedeploy"
+# module "codedeploy_dev" {
+#   source = "./modules/aws-codedeploy"
 
-codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
-for_each = toset(var.deployment_groups_dev)
-deployment_groups = each.value
-ec2_filter_name =module.ec2_dev.instance_name.Name
-codedeploy_role_arn = module.iam.codedeploy_role_arn
-}
+# codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+# for_each = toset(var.deployment_groups_dev)
+# deployment_groups = each.value
+# ec2_filter_name =module.ec2_dev.instance_name.Name
+# codedeploy_role_arn = module.iam.codedeploy_role_arn
+# }
 
-module "ec2_staging" {
-  source = "./modules/aws-ec2"
+# module "ec2_staging" {
+#   source = "./modules/aws-ec2"
 
-  instance_name  = var.staging_instance
-  ami_id         = var.ami_id
-  instance_type  = var.instance_type
-  subnet_id      = module.vpc.subnet_id
-  security_group = module.vpc.security_group
-  volume_size    = var.volume_size
-}
+#   instance_name  = var.staging_instance
+#   ami_id         = var.ami_id
+#   instance_type  = var.instance_type
+#   subnet_id      = module.vpc.subnet_id
+#   security_group = module.vpc.security_group
+#   volume_size    = var.volume_size
+# }
 
-module "codedeploy_staging" {
-  source = "./modules/aws-codedeploy"
+# module "codedeploy_staging" {
+#   source = "./modules/aws-codedeploy"
 
-codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
-for_each = toset(var.deployment_groups_staging)
-deployment_groups = each.value
-ec2_filter_name =module.ec2_staging.instance_name.Name
-codedeploy_role_arn = module.iam.codedeploy_role_arn
-}
+# codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+# for_each = toset(var.deployment_groups_staging)
+# deployment_groups = each.value
+# ec2_filter_name =module.ec2_staging.instance_name.Name
+# codedeploy_role_arn = module.iam.codedeploy_role_arn
+# }
 
-module "ec2_production" {
-  source = "./modules/aws-ec2"
+# module "ec2_production" {
+#   source = "./modules/aws-ec2"
 
-  instance_name  = var.prod_instance
-  ami_id         = var.ami_id
-  instance_type  = var.instance_type
-  subnet_id      = module.vpc.subnet_id
-  security_group = module.vpc.security_group
-  volume_size    = var.volume_size
-}
+#   instance_name  = var.prod_instance
+#   ami_id         = var.ami_id
+#   instance_type  = var.instance_type
+#   subnet_id      = module.vpc.subnet_id
+#   security_group = module.vpc.security_group
+#   volume_size    = var.volume_size
+# }
 
-module "codedeploy_production" {
-  source = "./modules/aws-codedeploy"
+# module "codedeploy_production" {
+#   source = "./modules/aws-codedeploy"
 
-codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
-for_each = toset(var.deployment_groups_production)
-deployment_groups = each.value
-ec2_filter_name =module.ec2_production.instance_name.Name
-codedeploy_role_arn = module.iam.codedeploy_role_arn
-}
+# codedeploy_app_name   = aws_codedeploy_app.codedeploy-app.name
+# for_each = toset(var.deployment_groups_production)
+# deployment_groups = each.value
+# ec2_filter_name =module.ec2_production.instance_name.Name
+# codedeploy_role_arn = module.iam.codedeploy_role_arn
+# }
 
 
 
@@ -176,21 +159,13 @@ codedeploy_role_arn = module.iam.codedeploy_role_arn
 # module "dynamodb" {
 #   source = "./modules/aws-dynamodb"
 
-#   table_names = var.table_names
-#   billing_mode             = var.billing_mode
-#   hash_key                 = var.hash_key
-#   range_key                = var.range_key
-#   attribute_1_name         = var.attribute_1_name
-#   attribute_1_type         = var.attribute_1_type
-#   attribute_2_name         = var.attribute_2_name
-#   attribute_2_type         = var.attribute_2_type
-#   ttl_attribute_name       = var.ttl_attribute_name
-#   ttl_enabled              = var.ttl_enabled
-#   gs_index_name            = var.gs_index_name
-#   gs_index_hash_key        = var.gs_index_hash_key
-#   gs_index_range_key       = var.gs_index_range_key
-#   gs_index_projection_type = var.gs_index_projection_type
-#   tag_name                 = var.tag_name
+#   for_each       = toset(var.table_names)
+#   table_names    = each.value
+#   hash_key       = var.hash_key
+#   range_key      = var.range_key
+#   attribute_type = var.attribute_type
+#   gs_index_name  = var.gs_index_name
+#   tag_name       = var.tag_name
 # }
 
 # module "route53" {
@@ -201,8 +176,4 @@ codedeploy_role_arn = module.iam.codedeploy_role_arn
 #   record_type = var.record_type
 #   record_ttl  = var.record_ttl
 #   instance_ip = module.ec2.public_instance_ip
-# }
-
-# output "ip" {
-#   value=module.ec2.public_instance_ip
 # }
