@@ -8,7 +8,7 @@ terraform {
 
   required_version = ">= 1.2.0"
 
-    backend "s3" {
+  backend "s3" {
     bucket         = "dodokpo-tf-state-bucket"
     key            = "terraform/statefile/terraform.tfstate"
     region         = "eu-west-1"

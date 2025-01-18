@@ -13,6 +13,7 @@ variable "staging_instance" {}
 variable "prod_instance" {}
 variable "ami_id" {}
 variable "instance_type" {}
+variable "keypair_name" {}
 
 # ebs
 variable "volume_size" {}
@@ -32,7 +33,6 @@ variable "deployment_groups_production" {
 # s3 bucket
 variable "codedeploy_bucket" {}
 variable "s3_bucket" {}
-variable "s3_backend" {}
 
 # cloudfront
 variable "cache_policy_name" {}

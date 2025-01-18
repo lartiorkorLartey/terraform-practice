@@ -1,14 +1,14 @@
-# module "iam" {
-#   source = "./modules/aws-iam"
+module "iam" {
+  source = "./modules/aws-iam"
 
-# }
+}
 
 module "vpc" {
   source = "./modules/aws-vpc"
 
-  sg_tag = var.sg_tag
-  aws_az=var.aws_az
-  vpc_tag=var.vpc_tag
+  sg_tag  = var.sg_tag
+  aws_az  = var.aws_az
+  vpc_tag = var.vpc_tag
 }
 
 # # codedeploy app
@@ -16,15 +16,18 @@ module "vpc" {
 #   name = var.codedeploy_app_name
 # }
 
+# instances and deployment groups
 module "ec2_dev" {
   source = "./modules/aws-ec2"
 
-  instance_name  = var.dev_instance
-  ami_id         = var.ami_id
-  instance_type  = var.instance_type
-  subnet_id      = module.vpc.subnet_id
-  security_group = module.vpc.security_group
-  volume_size    = var.volume_size
+  instance_name    = var.dev_instance
+  ami_id           = var.ami_id
+  instance_type    = var.instance_type
+  subnet_id        = module.vpc.subnet_id
+  security_group   = module.vpc.security_group
+  volume_size      = var.volume_size
+  instance_profile = module.iam.codedeploy_instance_profile
+  keypair_name     = var.keypair_name
 }
 
 # module "codedeploy_dev" {
@@ -81,7 +84,7 @@ module "ec2_dev" {
 
 
 
-
+# buckets and cloudfront distribution
 ###############################################################################
 
 # module "codedeploy_bucket" {
@@ -156,6 +159,7 @@ module "ec2_dev" {
 
 ###############################################################################
 
+# dynamodb tables
 # module "dynamodb" {
 #   source = "./modules/aws-dynamodb"
 

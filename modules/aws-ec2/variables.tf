@@ -4,11 +4,8 @@ variable "ami_id" {}
 variable "instance_type" {}
 variable "subnet_id" {}
 variable "security_group" {}
+variable "instance_profile" {}
+variable "keypair_name" {}
 
 # ebs
 variable "volume_size" {}
-# variable "aws_az" {}
-# variable "volume_size" {}
-
-# attachment
-# variable "device_name" {}
