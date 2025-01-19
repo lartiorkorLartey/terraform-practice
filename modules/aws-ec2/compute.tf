@@ -8,7 +8,8 @@ resource "aws_instance" "ec2_instance" {
   key_name                    = var.keypair_name
 
   root_block_device {
-    volume_size = var.volume_size
+    volume_size           = var.volume_size
+    delete_on_termination = true
   }
 
   tags = {
@@ -16,18 +17,7 @@ resource "aws_instance" "ec2_instance" {
   }
 }
 
-resource "aws_key_pair" "public_key" {
-  key_name   = var.keypair_name
-  public_key = tls_private_key.rsa_key.public_key_openssh
-}
-
-resource "tls_private_key" "rsa_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "local_file" "private_key" {
-  content         = tls_private_key.rsa_key.private_key_pem
-  filename        = "${var.keypair_name}.pem"
-  file_permission = "0400"
+resource "aws_ec2_instance_metadata_defaults" "enforce_imdsv2" {
+  http_tokens                 = "required"
+  http_put_response_hop_limit = -1
 }
