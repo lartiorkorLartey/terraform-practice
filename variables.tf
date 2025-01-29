@@ -33,6 +33,7 @@ variable "deployment_groups_production" {
 # s3 bucket
 variable "codedeploy_bucket" {}
 variable "s3_bucket" {}
+variable "prod_bucket" {}
 
 # cloudfront
 variable "cache_policy_name" {}
@@ -43,7 +44,7 @@ variable "cloudfront_environment" {}
 
 # dynamodb
 variable "table_names" {
-  type = list(string)
+  # type = list(string)
 }
 variable "hash_key" {}
 variable "range_key" {}

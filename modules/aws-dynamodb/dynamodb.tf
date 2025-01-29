@@ -26,6 +26,22 @@ resource "aws_dynamodb_table" "ddk-dynamodb-table" {
     projection_type = "KEYS_ONLY"
   }
 
+# usning import from s3 option
+  # point_in_time_recovery {
+  #   enabled = true
+  # }
+
+  # import_table {
+  #   input_compression_type="GZIP"
+  #   input_format = "DYNAMODB_JSON"
+
+  #   s3_bucket_source {
+  #    bucket= "dynamodb-migration-test-bucket"
+  #    bucket_owner = "047719661196"
+  #    key_prefix = "s3://<bkt-name/AWSDynamoDB/<id>/data/"
+  #   }
+  # }
+
   tags = {
     Name = var.tag_name
   }
